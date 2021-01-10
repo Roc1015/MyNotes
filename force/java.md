@@ -77,7 +77,7 @@ Java是一门面向对象编程语言，不仅吸收了C++语言的各种优点�
 
 ### 2.JDK、JRE、JVM
 
-![image-20210110171011284](C:\Users\13444\Desktop\notes\imgs\image-20210110171011284.png)
+![image-20210110171011284](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110171011284.png)
 
 - JDK：java开发者工具--包含jre+jvm
 
@@ -162,7 +162,7 @@ public class hello{
 
 
 
-![image-20210110170915569](C:\Users\13444\Desktop\notes\imgs\image-20210110170915569.png)
+![image-20210110170915569](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110170915569.png)
 
 ### 7.注释
 
@@ -171,13 +171,13 @@ public class hello{
 - IDEA中注释快捷键：ctrl+/
 
 1. 单行注释：//
-2. ![image-20210110201217725](C:\Users\13444\Desktop\notes\imgs\image-20210110201217725.png)
+2. ![image-20210110201217725](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110201217725.png)
 
 ### 8.标识符
 
 #### 1).关键字
 
-![image-20210110201510163](C:\Users\13444\Desktop\notes\imgs\image-20210110201510163.png)
+![image-20210110201510163](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110201510163.png)
 
 #### 2).标识符的规则
 
@@ -199,7 +199,7 @@ public class hello{
 1. 基本类型：数字（整数，小数）和字符
 2. 引用类型：类，接口，数组
 
-![image-20210110204347215](C:\Users\13444\Desktop\notes\imgs\image-20210110204347215.png)
+![image-20210110204347215](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110204347215.png)
 
 - 其中整形常量有不同的进制形式：二进制，八进制，十进制，十六进制，且进制内可以相互转换。
 
@@ -224,19 +224,19 @@ public class hello{
   3. 十进制为Decimal，简写为D
   4. 十六进制为Hexadecimal，简写为H
 
-  ![image-20210110212154493](C:\Users\13444\Desktop\notes\imgs\image-20210110212154493.png)
+  ![image-20210110212154493](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110212154493.png)
 
   控制台输出：
 
-  ![image-20210110212213451](C:\Users\13444\Desktop\notes\imgs\image-20210110212213451.png)
+  ![image-20210110212213451](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110212213451.png)
 
   #### 浮点类型与银行业务：最好完全避免使用浮点数进行比较
 
-  ![image-20210110213927925](C:\Users\13444\Desktop\notes\imgs\image-20210110213927925.png)
+  ![image-20210110213927925](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110213927925.png)
 
   控制台输出：
 
-  ![image-20210110213940395](C:\Users\13444\Desktop\notes\imgs\image-20210110213940395.png)
+  ![image-20210110213940395](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110213940395.png)
 
   #### char和String的区别
 
@@ -253,21 +253,21 @@ public class hello{
 - 从整理上可将变量分为局部变量，成员变量和静态变量：每个类型变量有这自己不同的生命周期。
 - 
 
-![image-20210110204713138](C:\Users\13444\Desktop\notes\imgs\image-20210110204713138.png)
+![image-20210110204713138](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110204713138.png)
 
-![image-20210110225512064](C:\Users\13444\Desktop\notes\imgs\image-20210110225512064.png)
+![image-20210110225512064](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110225512064.png)
 
-![image-20210110225947838](C:\Users\13444\Desktop\notes\imgs\image-20210110225947838.png)
+![image-20210110225947838](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110225947838.png)
 
 控制台输出：
 
-![image-20210110230001205](C:\Users\13444\Desktop\notes\imgs\image-20210110230001205.png)
+![image-20210110230001205](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110230001205.png)
 
 2. 常量：常量通常指确定的值：在Java语言中，主要是利用关键字final来定义一个常量。 常量一旦被初始化后不能再更改其值。
 
 ### 11.数据转换
 
-![image-20210110223747073](C:\Users\13444\Desktop\notes\imgs\image-20210110223747073.png)
+![image-20210110223747073](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110223747073.png)
 
 1. 强制类型转换：高-->低
 2. 自动类型转换：低-->高
@@ -277,15 +277,15 @@ public class hello{
 - 精度问题：
 - 大容量的数转换到小容量的数据类型容易溢出
 
-![image-20210110223806733](C:\Users\13444\Desktop\notes\imgs\image-20210110223806733.png)
+![image-20210110223806733](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110223806733.png)
 
 注：黑色的实线表示无数据丢失的自动类型转换，而虚线表示在转换时可能会有精度的损失。
 
-![image-20210110225015613](C:\Users\13444\Desktop\notes\imgs\image-20210110225015613.png)
+![image-20210110225015613](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110225015613.png)
 
 控制台输出：
 
-![image-20210110225028973](C:\Users\13444\Desktop\notes\imgs\image-20210110225028973.png)
+![image-20210110225028973](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110225028973.png)
 
 ### 12.转义字符
 
@@ -320,11 +320,11 @@ public class hello{
 
 部分转义字符：
 
-![image-20210110220630564](C:\Users\13444\Desktop\notes\imgs\image-20210110220630564.png)
+![image-20210110220630564](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110220630564.png)
 
 控制台输出：
 
-![image-20210110220645084](C:\Users\13444\Desktop\notes\imgs\image-20210110220645084.png)
+![image-20210110220645084](C:\Users\13444\Desktop\MyNotes\imgs\image-20210110220645084.png)
 
 ### 13.
 
