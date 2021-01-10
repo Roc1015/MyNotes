@@ -355,6 +355,3 @@ public class hello{
 ### 26.
 
 ### 27.
-
-
-
