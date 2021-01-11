@@ -37,7 +37,9 @@ yaml语法结构：key： Value（对空格要求极高）
 
 properties语法结构：key=Value
 
-![image-20201221152849075](C:\Users\魁\Desktop\force\图片\image-20201221152849075.png)
+![image-20201221152849075](..\image-20201221152849075.png)
+
+
 
 通过yaml注入对象：
 
