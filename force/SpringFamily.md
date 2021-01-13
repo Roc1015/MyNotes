@@ -126,9 +126,9 @@
 
 - 快速开始：https://www.springcloud.cc/spring-cloud-config.html#_quick_start
 
-#### 3.新建SpringCloud
+#### 3.配置类文件参考
 
-- maven依赖导入
+##### 1.maven依赖导入
 
 ```xml
 <!---->
@@ -221,7 +221,7 @@
         </dependencies>
 ```
 
-- 方便依赖导入版本维护
+- 方便依赖导入版本维护，将version提到properties维护
 
 ![image-20210112152043199](../imgs/image-20210112152043199.png)
 
@@ -229,9 +229,84 @@
 
 
 
+- 新建其他模块时导入需要的模块
 
+![image-20210113105027226](../imgs/image-20210113105027226.png)
 
+##### 2.mybatis-config.xml文件头
 
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+</configuration>
+```
+
+##### 3.mapper.xml文件头
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace= "dao文件路径">
+//CRUD
+</mapper>
+```
+
+##### 4.新建项目启动类
+
+```java
+//启动类:请自定义启动类名称
+@SpringBootApplication
+public class DeptProvider_8001 {
+    public static void main(String[] args) {
+        SpringApplication.run(DeptProvider_8001.class,args);
+    }
+}
+```
+
+##### 5.application.yml文件
+
+```xml
+#服务端口号
+server:
+  port: 8001
+
+#MyBatis配置
+mybatis:
+  type-aliases-package: com.roc.springcloud.pojo.api
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mappers/*.xml
+
+#Spring配置
+spring:
+  application:
+    name: springcloud-provider
+
+#数据源及数据库配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.alibaba.druid.proxy.DruidDriver
+    url: jdbc:mysql://localhost:3306/Db01?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+```
+
+#### 4.新建SpringCloud项目遇见的问题
+
+- 新建项目时目录一直延长：编写package时重写全部项目文件路径，IDEA识别后会拆开
+
+![image-20210113102322358](../imgs/image-20210113102322358.png)
+
+- 链式写法：注解@Accessors(chain = true)
+
+![img](../imgs/04F1A985.jpg)
+
+![image-20210113160510676](../imgs/image-20210113160510676.png)
 
 
 
