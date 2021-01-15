@@ -308,6 +308,265 @@ spring:
 
 ![image-20210113160510676](../imgs/image-20210113160510676.png)
 
+#### 5.Eureka:服务注册与发现
+
+##### 1).什么是Eureka？
+
+```xml
+Eureka是Netflix的有个子模块，也是核心模块之一。Eureka是基于REST的服务，用于定位服务，以实现云端中间件层服务发现和故障转移，服务注册与发现对于微服务来说是非常重要的，有了服务注册与发现，只需要使用服务的标识符，就可以访问到服务，而不需要修改服务调用的配置文件了，功能类似于Dubbo的注册中心，比如Zookeeper.
+```
+
+##### 2).Eureka:基本架构
+
+![image-20210115111314266](../imgs/image-20210115111314266.png)
+
+```xml
+系统中的其他微服务，使用Eureka的客户端连接到EurekaServer并维持心跳连接。这样系统的维护人员就可以通过EurekaServer来监控系统中各个微服务是否正常运行，Springcloud 的一些其他模块 (比如Zuul) 就可以通过EurekaServer来发现系统中的其他微服务，并执行相关的逻辑.
+```
+
+##### 3).构建配置Eureka.server
+
+###### (1).pom.xml配置
+
+```xml
+<!--导入Eureka Server依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-eureka-server</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+```
+
+###### (2).application.yaml配置
+
+```xml
+server:
+  port: 7001
+
+# Eureka配置
+eureka:
+  instance:
+    # Eureka服务端的实例名字
+    hostname: 127.0.0.1
+  client:
+    # 表示是否向 Eureka 注册中心注册自己(这个模块本身是服务器,所以不需要)
+    register-with-eureka: false
+    # fetch-registry如果为false,则表示自己为注册中心,客户端的化为 ture
+    fetch-registry: false
+    # Eureka监控页面~
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+```
+
+##### 4).构建配置Eureka.client
+
+###### (1).pom.xml配置
+
+```xml
+<!--Eureka依赖-->
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-eureka -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-eureka</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+
+```
+
+###### (2).application.yaml
+
+```xml
+# Eureka配置：配置服务注册中心地址
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+```
+
+###### (3).给主启动类添加@EnableEurekaClient注解
+
+```xml
+/**
+ * @Auther: wp
+ * @Date: 2021年1月15日11:39:51
+ * @Description: 启动类
+ */
+@SpringBootApplication
+// @EnableEurekaClient 开启Eureka客户端注解，在服务启动后自动向注册中心注册服务
+@EnableEurekaClient
+public class DeptProvider_8001 {
+    public static void main(String[] args) {
+        SpringApplication.run(DeptProvider_8001.class,args);
+    }
+}
+```
+
+-----------------------------------------------**服务注册成功**-----------------------------------------------
+
+##### （4).修改Eureka上的默认描述信息
+
+```xml
+# Eureka配置：配置服务注册中心地址
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka/
+  instance:
+    instance-id: springcloud-provider-dept-8001 #修改Eureka上的默认描述信息
+```
+
+**截止以上其他个性化操作，包括单个服务的注册已经全部实现。**
+
+###### (5).关于Eureka的保护机制
+
+**注：Eureka心跳健康检查机制：https://www.jdon.com/springcloud/eureka-health-monitoring.html**
+
+```xml
+1.根据上图可得到，Eureka.server本身作为SpringCloud项目中的一个微服务存在，其他的微服务通过导入Eureka.client的jar成为一个Eureka的客户端，客户端会通过请求想server发送请求，也就是所谓的心跳，server来判断这个客户端是否还在继续工作。
+
+2.触发保护机制：
+  当因为网络原因，微服务和server之间无法进行通信，但是服务依旧是健康的，此时server不应该注销该服务，于是，进入自我保护模式。一旦进入保护模式，server则保护服务注册表中的信息，不在删除服务注册表中的数据，也不会注销任何微服务。同样当网络恢复后，server自动退出保护机制。综上所述，自我保护模式是一种应对网络异常的安全保护措施。
+
+3.架构哲学：它的架构哲学是宁可同时保留所有微服务（健康的微服务和不健康的微服务都会保留），也不盲目注销任何健康的微服务。使用自我保护模式，可以让Eureka集群更加的健壮、稳定。
+
+4.在Spring Cloud中，可以使用eureka.server.enable-self-preservation = false 禁用自我保护模式。
+```
+
+##### 5).Eureka：集群环境配置
+
+![image-20210115151434016](../imgs/image-20210115151434016.png)
+
+```xml
+搭建Eureka集群，确保单个server挂掉之后其他服务仍然可以使用。一个服务需要绑定多个Eureka，即使一个挂掉，其他仍旧可以使用。主要为理解集群的概念，同样的服务来承担出错的风险。
+```
+
+##### 6).对比Eureka和Zookeeper的区别
+
+注：**CAP**
+
+```xml
+1.什么是CAP原则？
+CAP定理又称CAP原则，指的是在一个分布式系统中，Consistency（一致性）、 Availability（可用性）、Partition tolerance（分区容错性），最多只能同时三个特性中的两个，三者不可兼得。
+
+CAP：是指的一致性，可用性，分区容错性
+
+C：一致性:即更新操作成功并返回客户端后，所有节点在同一时间的数据完全一致，这就是分布式的一致性。
+
+A:可用性：即服务一直可用，而且是正常响应时间。
+
+P:分区容错性：即分布式系统在遇到某节点或网络分区故障的时候，仍然能够对外提供满足一致性或可用性的服务。
+```
+
+注：CA，CP，AP
+
+```xml
+CA without P：如果不要求P（不允许分区），则C（强一致性）和A（可用性）是可以保证的。但放弃P的同时也就意味着放弃了系统的扩展性，也就是分布式节点受限，没办法部署子节点，这是违背分布式系统设计的初衷的。
+
+CP without A：如果不要求A（可用），相当于每个请求都需要在服务器之间保持强一致，而P（分区）会导致同步时间无限延长(也就是等待数据同步完才能正常访问服务)，一旦发生网络故障或者消息丢失等情况，就要牺牲用户的体验，等待所有数据全部一致了之后再让用户访问系统。设计成CP的系统其实不少，最典型的就是分布式数据库，如Redis、HBase等。对于这些分布式数据库来说，数据的一致性是最基本的要求，因为如果连这个标准都达不到，那么直接采用关系型数据库就好，没必要再浪费资源来部署分布式数据库。
+
+ AP wihtout C：要高可用并允许分区，则需放弃一致性。一旦分区发生，节点之间可能会失去联系，为了高可用，每个节点只能用本地数据提供服务，而这样会导致全局数据的不一致性。典型的应用就如某米的抢购手机场景，可能前几秒你浏览商品的时候页面提示是有库存的，当你选择完商品准备下单的时候，系统提示你下单失败，商品已售完。这其实就是先在 A（可用性）方面保证系统可以正常的服务，然后在数据的一致性方面做了些牺牲，虽然多少会影响一些用户体验，但也不至于造成用户购物流程的严重阻塞。
+```
+
+根据实际业务去考虑取舍问题
+
+1.银行业务：务必保证数据一致性，在可用性和分区容错进行取舍。
+
+2..........
+
+![image-20210115160841218](../imgs/image-20210115160841218.png)
+
+![image-20210115161109791](../imgs/image-20210115161109791.png)
+
+#### 6.Ribbon:客户端负载均衡工具
+
+##### 1.Ribbon是什么？
+
+```xml
+Ribbon 是 Netflix 发布的开源项目，主要功能是提供客户端的软件负载均衡算法，将 Netflix 的中间层服务连接在一起。Ribbon 的客户端组件提供一系列完整的配置项，如：连接超时、重试等。简单的说，就是在配置文件中列出 LoadBalancer (简称LB：负载均衡) 后面所有的及其，Ribbon 会自动的帮助你基于某种规则 (如简单轮询，随机连接等等) 去连接这些机器。我们也容易使用 Ribbon 实现自定义的负载均衡算法！
+```
+
+##### 2.Ribbon能做什么？
+
+```xml
+1.将用户的请求平摊的分配到多个服务上，从而达到系统的HA (高用)
+```
+
+**注：**
+
+1. 常见的负载均衡软件有Nginx，Lvs等
+2. Dubbo、SpringCloud 中均给我们提供了负载均衡，**SpringCloud 的负载均衡算法可以自定义**
+3. 负载均衡分类：
+
+- 集中式LB
+  - 即在服务的提供方和消费方之间使用独立的LB设施，如**Nginx(反向代理服务器)**，由该设施负责把访问请求通过某种策略转发至服务的提供方！
+- 进程式LB
+  - 将LB逻辑集成到消费方，消费方从服务注册中心获知有哪些地址可用，然后自己再从这些地址中选出一个合适的服务器。
+  - **Ribbon 就属于进程内LB**，它只是一个类库，集成于消费方进程，消费方通过它来获取到服务提供方的地址！
+
+##### 3.集成Ribbon
+
+###### 1.pom.xml：集成Ribbon和Eureka
+
+```xml
+<!--Ribbon-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-ribbon</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+<!--Eureka: Ribbon需要从Eureka服务中心获取要拿什么-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-eureka</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+```
+
+###### 2.application.yaml
+
+ 配置Eureka
+
+```xml
+# Eureka配置
+eureka:
+  client:
+    register-with-eureka: false # 不向 Eureka注册自己
+    service-url: # 从三个注册中心中随机取一个去访问
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
