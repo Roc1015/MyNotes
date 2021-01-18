@@ -146,8 +146,8 @@
         <lomok.version>1.18.16</lomok.version>
     </properties>
 
+	<!--注：版本截止到2021.01.12-->
     <!--打包方式-->
-    <!--注：版本截止到2021.01.12-->
     <packaging>pom</packaging>
 
     <dependencyManagement>
@@ -298,7 +298,7 @@ spring:
 
 #### 4.新建SpringCloud项目遇见的问题
 
-- 新建项目时目录一直延长：编写package时重写全部项目文件路径，IDEA识别后会拆开
+- 纯Maven项目：新建项目时目录一直延长：编写package时重写全部项目文件路径，IDEA识别后会拆开
 
 ![image-20210113102322358](../imgs/image-20210113102322358.png)
 
