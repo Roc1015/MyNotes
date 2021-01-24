@@ -537,7 +537,38 @@ eureka:
 
 ![image-20210118225256679](../imgs/image-20210118225256679.png)
 
+#### 7.Feign负载均衡
 
+#####  1.什么是Feign？
+
+Feign是声明式Web Service客户端，它让微服务之间的调用变得更简单，**类似controller调用service。**
+
+##### 2.Feign能做什么？
+
+Feign在Ribbon的基础上集成并封装了对Http的请求，**在Feign的实现下，我们只需要创建一个接口并使用注解的方式来配置它 (类似以前Dao接口上标注Mapper注解，现在是一个微服务接口上面标注一个Feign注解)，即可完成对服务提供方的接口绑定，简化了使用Spring Cloud Ribbon 时，自动封装服务调用客户端的开发量。**
+
+##### 3.Feign与Ribbon
+
+两者皆可实现负载均衡，Ribbon是Feign的子集，对于性能来讲，由于Feign进行了二次操作，所以存在性能会比Ribbon略低的可能。
+
+与**Ribbon**不同的是，通过**Feign**只需要定义服务绑定接口且以声明式的方法，优雅而简单的实现了服务调用。
+
+##### 4.集成Feign
+
+提供服务方+负载均衡客户端都需导入Feign，消费方则只管消费即可。
+
+```xml
+<!--Feign的依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-feign</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+```
+
+##### 5.Feign和Ribbon如何选择？
+
+#### 8.HyStrix：服务熔断
 
 
 
