@@ -16,7 +16,96 @@
 
 ### 2.为什么要使用EasyExcel？
 
-### 3.集成EasyExcel
+相较于POI较大程度地去节省内存的使用，避免内存溢出
+
+### 3.SpringBoot集成EasyExcel写excel
+
+#### 1.导入依赖
+
+```xml
+<!--easyExcel-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>easyexcel</artifactId>
+    <version>2.2.6</version>
+</dependency>
+<!--lombok-->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+</dependency>
+<!--fastjson-->
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>fastjson</artifactId>
+    <version>1.2.75</version>
+</dependency>
+```
+
+#### 2.创建对应所需表格的实体类
+
+```java
+@Data
+public class EasyExcelData {
+
+    @ExcelProperty("字符串标题")
+    private String string;
+    @ExcelProperty("日期标题")
+    private Date date;
+    @ExcelProperty("数字标题")
+    private Double doubleData;
+    /**
+     * 忽略这个字段
+     */
+    @ExcelIgnore
+    private String ignore;
+}
+```
+
+#### 3.写一个方法根据格式写入Excel
+
+```java
+public class EasyExcelWriteTest {
+
+    String Path = "excelStudy";
+
+    private List<EasyExcelData> data() {
+        List<EasyExcelData> list = new ArrayList<EasyExcelData>();
+        for (int i = 0; i < 10; i++) {
+            EasyExcelData data = new EasyExcelData();
+            data.setString( "字符串" + i);
+            data.setDate(new Date());
+            data.setDoubleData(0.56);
+            list.add(data);
+        }
+        return list;
+    }
+
+    //根据List写入数据
+    /**
+     * 最简单的写
+     * <p>1. 创建excel对应的实体对象 参照{@link EasyExcelData}
+     * <p>2. 直接写即可
+     */
+    @Test
+    public void simpleWrite() {
+        // 写法1
+        String fileName = Path + "EasyExcel.xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        // 如果这里想使用03 则 传入excelType参数即可
+        //write方法
+        //fileName
+        //格式从实体类中取
+        //sheet名字自定义
+        //doWrite写data中的数据
+        EasyExcel.write(fileName, EasyExcelData.class).sheet("模板").doWrite(data());
+    }
+}
+```
+
+![image-20210126100620026](../imgs/image-20210126100620026.png)
+
+### 4.SpringBoot集成EasyExcel读取excel
 
 ## 三.POI(Apache POI)
 
