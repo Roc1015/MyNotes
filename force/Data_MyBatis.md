@@ -211,61 +211,443 @@ MyBatis-Plus (opens new window)（简称 MP）是一个 MyBatis (opens new windo
 application.yml
 
 # mysql
-spring.datasource.username=root
-spring.datasource.password=root
-spring.datasource.url=jdbc:mysql://localhost:3306/mybatis_plus?userSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+#spring.datasource.username=root
+#spring.datasource.password=root
+#spring.datasource.url=jdbc:mysql://localhost:3306/mybatis_plus?userSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/user?userSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
 ```
 
 #### 3.编写Mapper继承BaseMapper
 
 ### 4.配置日志
 
+```xml
+#配置日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+```
 
+![image-20210131102636841](../imgs/image-20210131102636841.png)
 
+### 5.CRUD扩展
 
+##### 1.insert
 
+```java
+@Test
+public void addUser(){
+  User user = new User();
+  //我们并没有setId，而是自动生成了Id
+  user.setName("wangPeng");
+  user.setAge(81);
+  user.setEmail("1344471553@qq.com");
+  userMapper.insert(user);
+}
+```
 
+![image-20210131103323476](../imgs/image-20210131103323476.png)
 
+**主键生成策略**
 
+分布式系统唯一id生成:https://www.cnblogs.com/haoxinyue/p/5208136.html
 
+**雪花算法**😦**Twitter的snowflake算法**)
 
+```xml
+snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0.可以保证几乎全球唯一
+```
 
+在实体类上需要自增的主键上加上注解
 
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
 
+    @TableId(type = IdType.AUTO)
+    private Integer id;
 
+    private String name;
+    private Integer age;
+    private String email;
+}
+```
 
+@TableId()的其他属性
 
+```java
+    AUTO(0),//数据库ID自增  
+    NONE(1),//该类型为未设置主键类型      
+    INPUT(2),//用户输入ID
+      		 //该类型可以通过自己注册自动填充插件进行填充  
+    
+//以下3种类型、只有当插入对象ID 为空，才自动填充。     
+    ID_WORKER(3),//全局唯一ID (idWorker)      
+    UUID(4),//全局唯一ID (UUID)          
+    ID_WORKER_STR(5);//字符串全局唯一ID (idWorker 的字符串表示)    
+```
 
+##### 2.update
 
+```java
+@Test
+public void update(){
+  User user = new User();
+  //我们并没有setId，而是自动生成了Id
+  user.setId(6);
+  user.setName("wangyufei");
+  user.setAge(18);
+  user.setEmail("1344471553@qq.com");
+  userMapper.updateById(user);
+}
+```
 
+![image-20210131112636293](../imgs/image-20210131112636293.png)
 
+### 自动填充：源自官网：https://mp.baomidou.com/guide/auto-fill-metainfo.html
 
+```xml
+创建时间 . 修改时间! 这些个操作都是自动化完成的,我们不希望手动更新!
 
+阿里巴巴开发手册:所有的数据库表:gmt_create .gmt_modified几乎所有的表都要配置上!而且需要自动化!
+```
 
+更新表结构
 
+```java
+CREATE TABLE user
+(
+    id BIGINT(20) NOT NULL COMMENT '主键ID' auto_increment,
+    name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+    age INT(11) NULL DEFAULT NULL COMMENT '年龄',
+    email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+    create_time datetime DEFAULT  CURRENT_TIMESTAMP,
+    update_time datetime ON UPDATE  CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+```
 
+更新对应实体类
 
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
 
+    @TableId(type = IdType.AUTO)
+    private Integer id;
 
+    private String name;
+    private Integer age;
+    private String email;
+    private Date createTime;
+    private Date updateTime;
 
+}
+```
 
+### 6.乐观锁/悲观锁：https://www.bilibili.com/video/BV17E411N7KN?p=8&spm_id_from=pageDriver
 
+```xml
+乐观锁: 顾名思义十分乐观,他总是认为不会出现问题,无论干什么都不去上锁!如果出现了问题,再次更新值测试
 
+悲观锁;顾名思义十分悲观,他总是认为出现问题,无论干什么都会上锁!再去操作!
+```
 
+当要更新一条记录的时候，希望这条记录没有被别人更新
+乐观锁实现方式：
 
+> - 取出记录时，获取当前version
+> - 更新时，带上这个version
+> - 执行更新时， set version = newVersion where version = oldVersion
+> - 如果version不对，就更新失败
 
+乐观锁/悲观锁/自旋锁/JUC······
 
+### 7.查询操作
 
+#### 1.根据ID查询用户
 
+```java
+@Test
+public void selectUserById(){
+  User user = userMapper.selectById(1);
+  System.out.println(user);
+}
+```
 
+![image-20210131121707570](../imgs/image-20210131121707570.png)
 
+#### 2.查询用户列表
 
+```java
+@Test
+public void selectUserList(){
+  List<User> userList = userMapper.selectList(null);
+  userList.forEach(System.out::println);
+}
+```
 
+![image-20210131121757681](../imgs/image-20210131121757681.png)
 
+#### 3.查询部分用户
 
+```java
+@Test
+public void selectUserByIds(){
+  List<User> userList = userMapper.selectBatchIds(Arrays.asList(1, 2, 3));
+  userList.forEach(System.out::println);
+}
+```
 
+![image-20210131121839473](../imgs/image-20210131121839473.png)
 
+#### 4.使用map进行条件查询
 
+```java
+@Test
+public void setUserByMap(){
+  HashMap<String, Object> map = new HashMap<>();
+  map.put("name","wangyufei");
+  List<User> userList = userMapper.selectByMap(map);
+  userList.forEach(System.out::println);
+}
+```
 
+![image-20210131123045465](../imgs/image-20210131123045465.png)
+
+### 8.分页查询
+
+#### 1.传统的使用limit分页
+
+#### 2.pageHelper第三方插件
+
+#### 3.MP内置分页插件
+
+官网：https://mp.baomidou.com/guide/page.html
+
+![image-20210131151829898](../imgs/image-20210131151829898.png)
+
+### 9.删除操作
+
+#### 1.根据Id删除
+
+```java
+@Test
+public void deleteById(){
+  userMapper.deleteById(6);
+}
+```
+
+![image-20210131152215837](../imgs/image-20210131152215837.png)
+
+#### 2.批量删除
+
+```java
+@Test
+public void deleteByBatchId(){
+  userMapper.deleteBatchIds(Arrays.asList(1, 2, 3));
+}
+```
+
+![image-20210131152617652](../imgs/image-20210131152617652.png)
+
+![image-20210131152629307](../imgs/image-20210131152629307.png)
+
+#### 3.通过map删除
+
+```java
+@Test
+public void deleteByMap(){
+  HashMap<String, Object> map = new HashMap<>();
+  map.put("name","Sandy");
+  userMapper.deleteByMap(map);
+}
+```
+
+![image-20210131153001526](../imgs/image-20210131153001526.png)
+
+### 10.逻辑删除/物理删除
+
+#### 1.更改表结构
+
+```mysql
+CREATE TABLE user
+(
+    id BIGINT(20) NOT NULL COMMENT '主键ID' auto_increment,
+    name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+    age INT(11) NULL DEFAULT NULL COMMENT '年龄',
+    email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+    create_time datetime DEFAULT  CURRENT_TIMESTAMP,
+    update_time datetime ON UPDATE  CURRENT_TIMESTAMP,
+    deleted int(20) default '0',
+    PRIMARY KEY (id)
+);
+```
+
+#### 2.更改实体类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
+
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+
+    private String name;
+    private Integer age;
+    private String email;
+    private Date createTime;
+    private Date updateTime;
+
+    @TableLogic
+    private Integer deleted;
+}
+```
+
+#### 3.实际业务中删除其实为更新操作，将deleted改为“已被删除状态”。
+
+### 11.性能分析插件
+
+MP提供一种性能分析插件：https://mp.baomidou.com/guide/p6spy.html
+
+狂神：https://www.bilibili.com/video/BV17E411N7KN?p=13&spm_id_from=pageDriver
+
+1.导入插件
+
+```xml
+<dependency>
+    <groupId>p6spy</groupId>
+    <artifactId>p6spy</artifactId>
+    <version>3.8.7</version>
+</dependency>
+```
+
+2.配置插件
+
+### 12.条件构造器Wrapper
+
+官网：https://mp.baomidou.com/guide/wrapper.html
+
+B站狂神：https://www.bilibili.com/video/BV17E411N7KN?p=14&spm_id_from=pageDriver
+
+#### 1.通过Wrapper构造条件进行查询
+
+```java
+@Test
+//查询name不为空，且邮箱不为空，年龄大于12岁的用户
+public void selectByWrapper(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper
+            .isNotNull("name")
+            .isNotNull("email")
+            .ge("age",12);
+
+    userMapper.selectList(queryWrapper).forEach(System.out::println);
+}
+```
+
+![image-20210131162243576](../imgs/image-20210131162243576.png)
+
+```mysql
+SELECT id,name,age,email,create_time,update_time,deleted FROM user WHERE deleted=0 AND (name IS NOT NULL AND email IS NOT NULL AND age >= ?)
+```
+
+#### 2.通过Wrapper构造模糊查询
+
+```java
+@Test
+public void selectByName(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("name","kuangshengshuo");
+    userMapper.selectList(queryWrapper);    
+}
+```
+
+![image-20210131165626311](../imgs/image-20210131165626311.png)
+
+```mysql
+SELECT id,name,age,email,create_time,update_time,deleted FROM user WHERE deleted=0 AND (name = ?)
+```
+
+![image-20210131165856948](../imgs/image-20210131165856948.png)
+
+#### 3.通过wrapper构造between···and···
+
+```java
+@Test
+public void selectByBetween(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.between("age","10","30");
+    userMapper.selectList(queryWrapper).forEach(System.out::println);
+    Integer count = userMapper.selectCount(queryWrapper);
+    System.out.println(count);
+}
+```
+
+![image-20210131170400424](../imgs/image-20210131170400424.png)
+
+![image-20210131170414756](../imgs/image-20210131170414756.png)
+
+#### 4.通过wrapper构造模糊查询
+
+```java
+@Test
+public void selectByLike(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.notLike("name","e");
+    List<Map<String, Object>> maps = userMapper.selectMaps(queryWrapper);
+    maps.forEach(System.out::println);
+}
+```
+
+![image-20210131171009946](../imgs/image-20210131171009946.png)
+
+#### 5.嵌入SQL进行查询
+
+```java
+@Test
+public void selectBySql(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.inSql("id","select id from user where id <5");
+    List<Object> objects = userMapper.selectObjs(queryWrapper);
+    objects.forEach(System.out::println);
+}
+```
+
+![image-20210131172132464](../imgs/image-20210131172132464.png)
+
+#### 6.通过Id进行降序排序
+
+```java
+@Test
+public void selectByOrder(){
+    QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+    queryWrapper.orderByDesc("Id");
+    List<User> userList = userMapper.selectList(queryWrapper);
+    userList.forEach(System.out::println);
+}
+```
+
+![image-20210131172611988](../imgs/image-20210131172611988.png)
+
+### 13.代码自动生成器mybatis  generator
+
+官方：https://mp.baomidou.com/guide/generator.html#使用教程
+
+狂神：https://www.bilibili.com/video/BV17E411N7KN?p=16&spm_id_from=pageDriver
+
+![image-20210131173441357](../imgs/image-20210131173441357.png)
 
