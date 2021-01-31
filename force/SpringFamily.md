@@ -568,37 +568,138 @@ Feign在Ribbon的基础上集成并封装了对Http的请求，**在Feign的实�
 
 ##### 5.Feign和Ribbon如何选择？
 
+![image-20210131210242065](../imgs/image-20210131210242065.png)
+
 #### 8.HyStrix：服务熔断
 
+> 复杂分布式体系结构中的应用程序有数十个依赖关系，每个依赖关系在某些时候将不可避免失败！
 
+##### 分布式系统中服务雪崩是什么？
 
+```xml
+多个微服务之间调用的时候，假设微服务A调用微服务B和微服务C，微服务B和微服务C又调用其他的微服务，这就是所谓的“扇出”，如果扇出的链路上某个微服务的调用响应时间过长，或者不可用，对微服务A的调用就会占用越来越多的系统资源，进而引起系统崩溃，所谓的“雪崩效应”。
+```
 
+![image-20210131211204790](../imgs/image-20210131211204790.png)
 
+##### 1.什么是HyStrix？
 
+ **Hystrix**是一个应用于处理分布式系统的延迟和容错的开源库，在分布式系统里，许多依赖不可避免的会调用失败，比如超时，异常等，**Hystrix** 能够保证在一个依赖出问题的情况下，不会导致整个体系服务失败，避免级联故障，以提高分布式系统的弹性。
 
+ “**断路器**”本身是一种开关装置，当某个服务单元发生故障之后，通过断路器的故障监控 (类似熔断保险丝) ，**向调用方返回一个服务预期的，可处理的备选响应 (FallBack) ，而不是长时间的等待或者抛出调用方法无法处理的异常，这样就可以保证了服务调用方的线程不会被长时间，不必要的占用**，从而避免了故障在分布式系统中的蔓延，乃至雪崩。
 
+##### 2.HyStrix能做什么？
 
+- 服务降级
+- 服务熔断
+- 服务限流
+- 接近实时的监控
 
+![image-20210131211445848](../imgs/image-20210131211445848.png)
 
+![image-20210131211454938](../imgs/image-20210131211454938.png)
 
+![image-20210131211523331](../imgs/image-20210131211523331.png)
 
+![image-20210131211538241](../imgs/image-20210131211538241.png)
 
+##### 3.什么是HyStrix服务熔断？
 
+```xml
+ 熔断机制是赌赢雪崩效应的一种微服务链路保护机制。
 
+​ 当扇出链路的某个微服务不可用或者响应时间太长时，会进行服务的降级，进而熔断该节点微服务的调用，快速返回错误的响应信息。检测到该节点微服务调用响应正常后恢复调用链路。在SpringCloud框架里熔断机制通过Hystrix实现。Hystrix会监控微服务间调用的状况，当失败的调用到一定阀值缺省是5秒内20次调用失败，就会启动熔断机制。熔断机制的注解是：@HystrixCommand。
+```
 
+##### 4.实现HyStrix服务熔断
 
+ ```xml
+<!--导入Hystrix依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-hystrix</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+ ```
 
+##### 5.服务降级
 
+```xml
+服务降级是指 当服务器压力剧增的情况下，根据实际业务情况及流量，对一些服务和页面有策略的不处理，或换种简单的方式处理，从而释放服务器资源以保证核心业务正常运作或高效运作。说白了，就是尽可能的把系统资源让给优先级高的服务。
 
+资源有限，而请求是无限的。如果在并发高峰期，不做服务降级处理，一方面肯定会影响整体服务的性能，严重的话可能会导致宕机某些重要的服务不可用。所以，一般在高峰期，为了保证核心功能服务的可用性，都要对某些服务降级处理。比如当双11活动时，把交易无关的服务统统降级，如查看蚂蚁深林，查看历史订单等等。
 
+服务降级主要用于什么场景呢？当整个微服务架构整体的负载超出了预设的上限阈值或即将到来的流量预计将会超过预设的阈值时，为了保证重要或基本的服务能正常运行，可以将一些 不重要 或 不紧急 的服务或任务进行服务的 延迟使用 或 暂停使用。
 
+降级的方式可以根据业务来，可以延迟服务，比如延迟给用户增加积分，只是放到一个缓存中，等服务平稳之后再执行 ；或者在粒度范围内关闭服务，比如关闭相关文章的推荐。
+```
 
+###### 1.服务降级需要考虑的问题
 
+- 1）那些服务是核心服务，哪些服务是非核心服务
+- 2）那些服务可以支持降级，那些服务不能支持降级，降级策略是什么
+- 3）除服务降级之外是否存在更复杂的业务放通场景，策略是什么？
 
+#####  6.服务熔断和服务降级的区别
 
+- **服务熔断—>服务端**：某个服务超时或异常，引起熔断~，类似于保险丝(自我熔断)
+- **服务降级—>客户端**：从整体网站请求负载考虑，当某个服务熔断或者关闭之后，服务将不再被调用，此时在客户端，我们可以准备一个 FallBackFactory ，返回一个默认的值(缺省值)。会导致整体的服务下降，但是好歹能用，比直接挂掉强。
+- 触发原因不太一样，服务熔断一般是某个服务（下游服务）故障引起，而服务降级一般是从整体负荷考虑；管理目标的层次不太一样，熔断其实是一个框架级的处理，每个微服务都需要（无层级之分），而降级一般需要对业务有层级之分（比如降级一般是从最外围服务开始）
+- 实现方式不太一样，服务降级具有代码侵入性(由控制器完成/或自动降级)，熔断一般称为**自我熔断**。
 
+##### 7.Dashboard流监控
 
+###### 1.导入依赖
 
+```xml
+<!--Hystrix依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-hystrix</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+<!--dashboard依赖-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-hystrix-dashboard</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+<!--Ribbon-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-ribbon</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+<!--Eureka-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-eureka</artifactId>
+    <version>1.4.6.RELEASE</version>
+</dependency>
+<!--实体类+web-->
+<dependency>
+    <groupId>com.haust</groupId>
+    <artifactId>springcloud-api</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<!--热部署-->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+</dependency>
+```
+
+![image-20210131222253268](../imgs/image-20210131222253268.png)
+
+![image-20210131222119609](../imgs/image-20210131222119609.png)
+
+#### 9.Zuul路由网关
+
+狂神：https://www.bilibili.com/video/BV1jJ411S7xr?p=17&spm_id_from=pageDriver
 
 
 
