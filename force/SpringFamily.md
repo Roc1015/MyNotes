@@ -701,7 +701,145 @@ Feign在Ribbon的基础上集成并封装了对Http的请求，**在Feign的实�
 
 狂神：https://www.bilibili.com/video/BV1jJ411S7xr?p=17&spm_id_from=pageDriver
 
+官方文档：https://github.com/Netflix/zuul/
 
+SpringCloud中文网关于Zuul的解释：https://www.springcloud.cc/spring-cloud-greenwich.html#_router_and_filter_zuul
+
+##### 1.什么是Zuul？
+
+```xml
+Zull包含了对请求的路由(用来跳转的)和过滤两个最主要功能：
+
+​ 其中路由功能负责将外部请求转发到具体的微服务实例上，是实现外部访问统一入口的基础，而过滤器功能则负责对请求的处理过程进行干预，是实现请求校验，服务聚合等功能的基础。Zuul和Eureka进行整合，将Zuul自身注册为Eureka服务治理下的应用，同时从Eureka中获得其他服务的消息，也即以后的访问微服务都是通过Zuul跳转后获得。
+```
+
+![image-20210202225351708](../imgs/image-20210202225351708.png)
+
+##### 2.zuul能做什么？
+
+> 代理 + 路由 + 过滤
+
+[Netflix将Zuul](https://www.slideshare.net/MikeyCohen1/edge-architecture-ieee-international-conference-on-cloud-engineering-32240146/27)用于以下[用途](https://www.slideshare.net/MikeyCohen1/edge-architecture-ieee-international-conference-on-cloud-engineering-32240146/27)：
+
+- 认证方式
+- 见解
+- 压力测试
+- 金丝雀测试
+- 动态路由
+- 服务迁移
+- 减载
+- 安全
+- 静态响应处理
+- 主动/主动流量管理
+
+##### 3.导入Zuul	
+
+###### 1.pom.xml
+
+```xml
+<dependencies>
+    <!--导入zuul依赖-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-zuul</artifactId>
+        <version>1.4.6.RELEASE</version>
+    </dependency>
+    <!--Hystrix依赖-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-hystrix</artifactId>
+        <version>1.4.6.RELEASE</version>
+    </dependency>
+    <!--dashboard依赖-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-hystrix-dashboar</artifactId>
+        <version>1.4.6.RELEASE</version>
+    </dependency>
+    <!--Ribbon-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-ribbon</artifactId>
+        <version>1.4.6.RELEASE</version>
+    </dependency>
+    <!--Eureka-->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-eureka</artifactId>
+        <version>1.4.6.RELEASE</version>
+    </dependency>
+    <!--实体类+web-->
+    <dependency>
+        <groupId>com.haust</groupId>
+        <artifactId>springcloud-api</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <!--热部署-->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+    </dependency>
+</dependencies>
+```
+
+###### 2.application.yml
+
+```xml
+server:
+  port: 9527
+
+spring:
+  application:
+    name: springcloud-zuul #微服务名称
+
+# eureka 注册中心配置
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+  instance: #实例的id
+    instance-id: zuul9527.com
+    prefer-ip-address: true # 显示ip
+
+info:
+  app.name: roc.springcloud # 项目名称
+  company.name: ximidoudou # 公司名称
+
+# zull 路由网关配置
+zuul:
+  # 路由相关配置
+  # 原来访问路由 eg:http://www.cspStudy.com:9527/springcloud-provider-dept/dept/get/1
+  # zull路由配置后访问路由 eg:http://www.cspstudy.com:9527/haust/mydept/dept/get/1
+  routes:
+    mydept.serviceId: springcloud-provider-dept # eureka注册中心的服务提供方路由名称
+    mydept.path: /mydept/** # 将eureka注册中心的服务提供方路由名称 改为自定义路由名称
+  # 不能再使用这个路径访问了，*： 忽略,隐藏全部的服务名称~
+  ignored-services: "*"
+  # 设置公共的前缀
+  prefix: /roc
+```
+
+###### 3.主启动类
+
+```xml
+/**
+ * @Auther: roc
+ * @Date: 2021年2月2日23:13:24
+ * @Description: Zull路由网关主启动类
+ */
+@SpringBootApplication
+@EnableZuulProxy // 开启Zuul
+public class ZuulApplication_9527 {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ZuulApplication_9527.class,args);
+    }
+}
+```
 
 
 
