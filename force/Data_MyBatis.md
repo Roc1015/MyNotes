@@ -184,7 +184,41 @@ MyBatis-Plus (opens new window)（简称 MP）是一个 MyBatis (opens new windo
 
 ### 3.快速开始
 
-#### 1.依赖导入：
+**数据库搭建**
+
+```mysql
+# ------------------------
+# 创建数据库User
+create database User;
+# 使用数据库User
+use  User;
+# 如果user表存在的话，删除user
+drop table if exists user ;
+# 创建user表
+CREATE TABLE user
+(
+    id BIGINT(20) NOT NULL COMMENT '主键ID' auto_increment,
+    name VARCHAR(30) NULL DEFAULT NULL COMMENT '姓名',
+    age INT(11) NULL DEFAULT NULL COMMENT '年龄',
+    email VARCHAR(50) NULL DEFAULT NULL COMMENT '邮箱',
+    create_time datetime DEFAULT  CURRENT_TIMESTAMP,
+    update_time datetime ON UPDATE  CURRENT_TIMESTAMP,
+    deleted int(20) default '0',
+    PRIMARY KEY (id)
+);
+# 插入数据
+insert into user
+(id, name, age, email, create_time, update_time, deleted)
+VALUES
+(1,'mark',19,'1344471553@qq.com',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,0),
+(2,null,30,'1344471553@qq.com',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,0),
+(3,'roc',19,null,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,0),
+(4,'john',19,'13@qq.com',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,0);
+# 查询user表
+select * from user;
+```
+
+#### 1.依赖导入
 
 ```xml
 <!--mysql-->
