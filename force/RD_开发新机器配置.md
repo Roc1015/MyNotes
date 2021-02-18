@@ -1,4 +1,4 @@
-# 新机器：更新ing
+新机器：更新ing
 
 2021年2月18日15:18:04更新
 
@@ -42,7 +42,15 @@
 
 ### 4.typora
 
-常用快捷键学习https://blog.csdn.net/knight_zhou/article/details/106223251?ops_request_misc=%25257B%252522request%25255Fid%252522%25253A%252522160851693116780308358190%252522%25252C%252522scm%252522%25253A%25252220140713.130102334..%252522%25257D&request_id=160851693116780308358190&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_click~default-1-106223251.nonecase&utm_term=typora%E5%BF%AB%E6%8D%B7%E9%94%AE
+- 常用快捷键学习https://blog.csdn.net/knight_zhou/article/details/106223251?ops_request_misc=%25257B%252522request%25255Fid%252522%25253A%252522160851693116780308358190%252522%25252C%252522scm%252522%25253A%25252220140713.130102334..%252522%25257D&request_id=160851693116780308358190&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_click~default-1-106223251.nonecase&utm_term=typora%E5%BF%AB%E6%8D%B7%E9%94%AE
+
+- 大纲折叠展示
+
+  设置：https://blog.csdn.net/tian_ci/article/details/85257667
+
+  ![image-20210218164321877](../imgs/image-20210218164321877.png)
+
+- 
 
 ### 5.Git
 
