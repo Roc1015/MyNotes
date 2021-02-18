@@ -37,6 +37,9 @@
 - 工具安装目录：默认安装及缓存在C盘
 - 代码放大缩小：https://www.cnblogs.com/zlslch/p/7770965.html
 - IDEA插件：mybatiscoderhelper（安装及激活）：https://blog.csdn.net/lianghecai52171314/article/details/105511508
+- IDEA花里胡哨的插件
+
+![image-20210218122840126](../imgs/image-20210218122840126.png)
 
 #### 4.其他
 

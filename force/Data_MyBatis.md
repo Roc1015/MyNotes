@@ -20,12 +20,11 @@ C为控制，也就是事件，用于流程的控制。
 采用DAO模式，建立实体类和数据库表映射（ORM映射）。也就是哪个类对应哪个表，哪个属性对应哪个列。持久层的目的就是，完成对象数据和关系数据的转换。
 
 二、SSH框架
-
 业务层——Spring
 表现层——Struts
 持久层——Hibernate
-三、SSM框架
 
+三、SSM框架
 业务层——Spring
 表现层——SpringMVC
 持久层——MyBatis
@@ -247,7 +246,7 @@ application.yml
 # mysql
 #spring.datasource.username=root
 #spring.datasource.password=root
-#spring.datasource.url=jdbc:mysql://localhost:3306/mybatis_plus?userSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#spring.datasource.url=jdbc:mysql://localhost:3306/User?userSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
 #spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring:
@@ -293,7 +292,7 @@ public void addUser(){
 
 分布式系统唯一id生成:https://www.cnblogs.com/haoxinyue/p/5208136.html
 
-**雪花算法**😦**Twitter的snowflake算法**)
+**雪花算法**😦**Twitter的snowflake算法**
 
 ```xml
 snowflake是Twitter开源的分布式ID生成算法，结果是一个long型的ID。其核心思想是：使用41bit作为毫秒数，10bit作为机器的ID（5个bit是数据中心，5个bit的机器ID），12bit作为毫秒内的流水号（意味着每个节点在每毫秒可以产生 4096 个 ID），最后还有一个符号位，永远是0.可以保证几乎全球唯一

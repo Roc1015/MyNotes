@@ -19,8 +19,13 @@
 
 # 三.常见的版本控制工具
 
+使用过
+
 - **Git**
 - **SVN**（Subversion）
+
+未使用过
+
 - **CVS**（Concurrent Versions System）
 - **VSS**（Micorosoft Visual SourceSafe）
 - **TFS**（Team Foundation Server）
@@ -271,6 +276,6 @@ $ git branch -dr [remote/branch]
 
 ## 2.TortoiseGit
 
-## 3.Sourcetree
+## 3.SourceTree
 
 ## 4.TortoiseSVN
