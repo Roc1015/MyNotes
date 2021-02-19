@@ -223,11 +223,27 @@ Location：让网页重新定位；
 
 - 500 502:网关错误
 
+## 四.servlet
+
+### 1.servlet简介
+
+Servlet就是sun公司开发动态web的一门技术
+
+### 2.第一个servlet程序
+
+> Serlvet接口Sun公司有两个默认的实现类：httpServlet，GenericServlet
+
+### 3.servlet运行原理
+
+![image-20210219160221154](../imgs/image-20210219160221154.png)
 
 
 
 
-四.
+
+
+
+
 
 五.
 
