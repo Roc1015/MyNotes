@@ -62,7 +62,7 @@ GitHub : https://github.com/spring-projects
 
 ![image-20210218233332485](../imgs/image-20210218233332485.png)
 
-#### 3.Spring思想及理论
+#### 3.Spring思想及理论：IOC
 
 ##### 1.IOC理论
 
@@ -73,6 +73,223 @@ GitHub : https://github.com/spring-projects
 ```
 
 ![image-20210219165647847](../imgs/image-20210219165647847.png)
+
+![image-20210220141529210](../imgs/image-20210220141529210.png)
+
+- **控制反转是一种通过描述（XML或注解）并通过第三方去生产或获取特定对象的方式。在Spring中实现控制反转的是IoC容器，其实现方法是依赖注入（Dependency Injection,DI）。**
+
+##### 2.第一个Spring代码块：IOC的进阶理解
+
+例子1：http://c.biancheng.net/view/4251.html
+
+例子2：视频：https://www.bilibili.com/video/BV1WE411d7Dv?p=5&t=82
+
+​			  链接：https://mp.weixin.qq.com/s/Sa39ulmHpNFJ9u48rwCG7A
+
+![image-20210220144305237](../imgs/image-20210220144305237.png)
+
+bean相当于创建一个对象，整个xml或者spring就是一个beans容器（对象容器），我们把new对象的动作交给了spring进行操作，省去了我们需要是创建相应对象的动作，类似于下面的new一个“hello”对象
+
+```java
+Hello hello = new Hello();
+```
+
+将下面的new这个动作交于spring解决，后续交于注解解决。所谓的“控制反转”就是将我们自己去操作“反转”到spring操作，我们的代码不必出现一大堆的“new”，以及同一个类被多次引用从而创建多次对象，一定程度上避免资源的浪费。（资源浪费这个属于道听途说，如下图，java虚拟机new一个对象，当然，任重而道远，我也一定能了解到JVM相关的知识和应用。）
+
+![image-20210220145036158](../imgs/image-20210220145036158.png)
+
+![image-20210220150813768](../imgs/image-20210220150813768.png)
+
+**所谓的IoC,一句话搞定 : 对象由Spring 来创建 , 管理 , 装配 !** 
+
+##### 3.Spring IOC创建对象的方式
+
+1. 无参构造初始化
+2. 有参构造初始化
+
+```xml
+<!-- 第一种根据index参数下标设置 -->
+<bean id="userT" class="com.kuang.pojo.UserT">
+   <!-- index指构造方法 , 下标从0开始 -->
+   <constructor-arg index="0" value="kuangshen2"/>
+</bean>
+
+<!-- 第二种根据参数名字设置 -->
+<bean id="userT" class="com.kuang.pojo.UserT">
+   <!-- name指参数名 -->
+   <constructor-arg name="name" value="kuangshen2"/>
+</bean>
+
+<!-- 第三种根据参数类型设置 -->
+<bean id="userT" class="com.kuang.pojo.UserT">
+   <constructor-arg type="java.lang.String" value="kuangshen2"/>
+</bean>
+```
+
+#### 4.Spring思想及理论：DI
+
+- 什么是依赖注入？
+
+  依赖注入的本质为Set注入。
+
+- 什么是依赖？
+
+  bean对象的创建依赖于容器。
+
+- 什么是注入？
+
+  bean对象中对的所有属性，有容器来注入。
+
+##### 1.构造器注入
+
+##### 2.Set方式注入
+
+###### 1.常量注入
+
+```xml
+ <bean id="student" class="com.kuang.pojo.Student">
+     <property name="name" value="小明"/>
+ </bean>
+```
+
+###### 2.Bean注入
+
+注意点：这里的值是一个引用，ref
+
+```xml
+ <bean id="addr" class="com.kuang.pojo.Address">
+     <property name="address" value="重庆"/>
+ </bean>
+ 
+ <bean id="student" class="com.kuang.pojo.Student">
+     <property name="name" value="小明"/>
+     <property name="address" ref="addr"/>
+ </bean>
+```
+
+###### 3.数组注入
+
+```xml
+ <bean id="student" class="com.kuang.pojo.Student">
+     <property name="name" value="小明"/>
+     <property name="address" ref="addr"/>
+     <property name="books">
+         <array>
+             <value>西游记</value>
+             <value>红楼梦</value>
+             <value>水浒传</value>
+         </array>
+     </property>
+ </bean>
+```
+
+###### 4.List注入
+
+```xml
+ <property name="hobbys">
+     <list>
+         <value>听歌</value>
+         <value>看电影</value>
+         <value>爬山</value>
+     </list>
+ </property>
+```
+
+###### 5.Map注入
+
+```xml
+ <property name="card">
+     <map>
+         <entry key="中国邮政" value="456456456465456"/>
+         <entry key="建设" value="1456682255511"/>
+     </map>
+ </property>
+```
+
+###### 6.set注入
+
+```xml
+ <property name="games">
+     <set>
+         <value>LOL</value>
+         <value>BOB</value>
+         <value>COC</value>
+     </set>
+ </property>
+```
+
+###### 7.Null注入
+
+```xml
+ <property name="wife"><null/></property>
+```
+
+###### 8.Properties注入
+
+```xml
+ <property name="info">
+     <props>
+         <prop key="学号">20190604</prop>
+         <prop key="性别">男</prop>
+         <prop key="姓名">小明</prop>
+     </props>
+ </property>
+```
+
+##### 3.扩展方法注入
+
+
+
+#### 5.Spring配置
+
+##### 1.bean的别名
+
+```xml
+<!--设置别名：在获取Bean的时候可以使用别名获取-->
+<alias name="userT" alias="userNew"/>
+```
+
+##### 2.Bean的配置
+
+```xml
+<!--bean就是java对象,由Spring创建和管理-->
+
+<!--
+   id 是bean的标识符,要唯一,如果没有配置id,name就是默认标识符
+   如果配置id,又配置了name,那么name是别名
+   name可以设置多个别名,可以用逗号,分号,空格隔开
+   如果不配置id和name,可以根据applicationContext.getBean(.class)获取对象;
+
+class是bean的全限定名=包名+类名
+-->
+<bean id="hello" name="hello2 h2,h3;h4" class="com.kuang.pojo.Hello">
+   <property name="name" value="Spring"/>
+</bean>
+```
+
+##### 3.Import
+
+```xml
+<import resource="{path}/beans.xml"/>
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
